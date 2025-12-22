@@ -31,7 +31,15 @@ jobs:
         id: latest-release
         run: |
           # Fetch the latest release tag from pemsley/coot repository
-          LATEST_TAG=$(curl -s https://api.github.com/repos/pemsley/coot/releases/latest | jq -r .tag_name)
+          LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/pemsley/coot/releases/latest | \
+            jq -r .tag_name)
+          
+          if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" == "null" ]; then
+            echo "Error: Failed to fetch latest release"
+            exit 1
+          fi
+          
           echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
           echo "Latest upstream Coot version: $LATEST_TAG"
 
@@ -39,7 +47,19 @@ jobs:
         id: current-version
         run: |
           # Extract current tag from the manifest file
-          CURRENT_TAG=$(grep -A2 "url: https://github.com/pemsley/coot.git" io.github.pemsley.coot.yaml | grep "tag:" | awk '{print $2}')
+          if [ ! -f io.github.pemsley.coot.yaml ]; then
+            echo "Error: Manifest file not found"
+            exit 1
+          fi
+          
+          CURRENT_TAG=$(grep -A2 "url: https://github.com/pemsley/coot.git" \
+            io.github.pemsley.coot.yaml | grep "tag:" | awk '{print $2}')
+          
+          if [ -z "$CURRENT_TAG" ]; then
+            echo "Error: Could not extract current tag from manifest"
+            exit 1
+          fi
+          
           echo "current_tag=$CURRENT_TAG" >> $GITHUB_OUTPUT
           echo "Current version in manifest: $CURRENT_TAG"
 
@@ -59,6 +79,13 @@ jobs:
         run: |
           # Update the tag in the manifest file
           sed -i "s/tag: ${{ steps.current-version.outputs.current_tag }}/tag: ${{ steps.latest-release.outputs.latest_tag }}/" io.github.pemsley.coot.yaml
+          
+          # Verify the update was successful
+          if ! grep -q "tag: ${{ steps.latest-release.outputs.latest_tag }}" io.github.pemsley.coot.yaml; then
+            echo "Error: Failed to update manifest file"
+            exit 1
+          fi
+          
           echo "Updated manifest to version ${{ steps.latest-release.outputs.latest_tag }}"
 
       - name: Determine target repository
@@ -83,8 +110,7 @@ jobs:
         with:
           token: ${{ secrets.FLATHUB_PAT }}
           push-to-fork: ${{ github.repository }}
-          commit-message: |
-            Update Coot to ${{ steps.latest-release.outputs.latest_tag }}
+          commit-message: "Update Coot to ${{ steps.latest-release.outputs.latest_tag }}"
           title: "Update Coot to ${{ steps.latest-release.outputs.latest_tag }}"
           body: |
             This PR updates Coot to ${{ steps.latest-release.outputs.latest_tag }}.
@@ -109,8 +135,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: |
-            Update Coot to ${{ steps.latest-release.outputs.latest_tag }}
+          commit-message: "Update Coot to ${{ steps.latest-release.outputs.latest_tag }}"
           title: "Update Coot to ${{ steps.latest-release.outputs.latest_tag }}"
           body: |
             This PR updates Coot to ${{ steps.latest-release.outputs.latest_tag }}.
