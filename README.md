@@ -54,3 +54,9 @@ Finally, you can run the app for testing.
 ```shell
 flatpak run io.github.pemsley.coot
 ```
+
+## Automated Version Updates
+
+This repository includes a GitHub Actions workflow that automatically monitors the upstream Coot repository for new releases and creates pull requests to update the Flatpak manifest. See [.github/workflows/README.md](.github/workflows/README.md) for setup instructions and details.
+
+このリポジトリには、上流のCootリポジトリの新しいリリースを自動的に監視し、Flatpak manifestを更新するためのプルリクエストを作成するGitHub Actionsワークフローが含まれています。セットアップ手順と詳細については、[.github/workflows/README.md](.github/workflows/README.md)を参照してください。
