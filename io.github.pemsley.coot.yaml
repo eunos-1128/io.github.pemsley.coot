@@ -621,6 +621,74 @@ modules:
           stable-only: true
           url-template: https://github.com/Unidata/netcdf-c/archive/v$version.tar.gz
 
+  - name: TBB
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DTBB_TEST=OFF
+      - -DTBB_EXAMPLES=OFF
+      - -DTBB_STRICT=OFF
+    builddir: true
+    sources:
+      - type: archive
+        url: https://github.com/oneapi-src/oneTBB/archive/refs/tags/v2022.3.0.tar.gz
+        sha256: 01598a46c1162c27253a0de0236f520fd8ee8166e9ebb84a4243574f88e6e50a
+        x-checker-data:
+          type: anitya
+          project-id: 8217
+          stable-only: true
+          url-template: https://github.com/oneapi-src/oneTBB/archive/refs/tags/v$version.tar.gz
+
+  - name: Embree
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DEMBREE_TUTORIALS:BOOL=OFF
+      - -DEMBREE_ISPC_SUPPORT:BOOL=ON
+    builddir: true
+    sources:
+      - type: archive
+        url: https://github.com/embree/embree/archive/refs/tags/v4.4.0.tar.gz
+        sha256: acb517b0ea0f4b442235d5331b69f96192c28da6aca5d5dde0cbe40799638d5c
+    modules:
+      - name: ISPC
+        buildsystem: simple
+        build-commands:
+          - cp bin/ispc /app/bin/
+        cleanup:
+          - /bin/ispc
+        sources:
+          - type: archive
+            url: https://github.com/ispc/ispc/releases/download/v1.30.0/ispc-v1.30.0-linux.tar.gz
+            sha256: 63e7d61037849fa1ed644f0398d21740ee9f880b9bf81f017c65eebe1d42c02b
+            only-arches:
+              - x86_64
+          - type: archive
+            url: https://github.com/ispc/ispc/releases/download/v1.30.0/ispc-v1.30.0-linux.aarch64.tar.gz
+            sha256: xxxxxxxxxx
+            only-arches:
+              - aarch64
+
+  - name: rkcommon
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+      - -DBUILD_TESTING:BOOL=OFF
+    sources:
+      - type: archive
+        url: https://github.com/ospray/rkcommon/archive/refs/tags/v1.14.0.tar.gz
+        sha256: 5aef75afc8d4fccf9e70df4cbdf29a1b28b39ee51b5588b94b83a14c6a166d83
+
+  - name: OSPRay
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DOSPRAY_ENABLE_APPS:BOOL=OFF
+      - -DOSPRAY_ENABLE_VOLUMES:BOOL=OFF
+    sources:
+      - type: archive
+        url: https://github.com/ospray/ospray/archive/refs/tags/v3.2.0.tar.gz
+        sha256: 2c8108df2950bc5d1bc2a62f74629233dbe4f36e3f6a8ea032907d4a3fdc6750
+
   - name: coot
     buildsystem: autotools
     config-opts:
