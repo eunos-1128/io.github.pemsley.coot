@@ -353,8 +353,8 @@ modules:
       cflags: -O2 -fno-strict-aliasing -Wno-narrowing -fPIC -DNDEBUG
     sources:
       - type: archive
-        url: https://www.prevanders.net/libdwarf-2.3.0.tar.xz
-        sha256: a153e8101828a478f88d18341267b59c19a3fc794bea47388347ce994ba90c17
+        url: https://www.prevanders.net/libdwarf-2.3.1.tar.xz
+        sha256: 28cf9a5d27aceff5c1f906244a4fe7ae208e41d20a6d8fc7e091c633a40b6e97
         x-checker-data:
           type: anitya
           project-id: 1597
@@ -560,8 +560,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/rdkit/rdkit
-        tag: Release_2025_09_6
-        commit: 0ece02e9254ef2d5eeade2bd40eb13546522dbd3
+        tag: Release_2026_03_1
+        commit: 351f8f378f8ad6bbd517980c38896e66bf907af8
         x-checker-data:
           type: git
           tag-pattern: ^Release_([0-9]+_[0-9]+_[0-9]+)$
@@ -602,6 +602,25 @@ modules:
           - cp enum.h Code/RDGeneral  # Place it in the required location in advance
           - sed -i 's|FetchContent_MakeAvailable(better_enums)||' Code/RDGeneral/CMakeLists.txt  # Prevent downloading
 
+  - name: netcdf
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DENABLE_HDF5=OFF
+      - -DENABLE_DAP=OFF
+      - -DBUILD_SHARED_LIBS=ON
+      - -DENABLE_TESTS=OFF
+    sources:
+      - type: archive
+        url: https://github.com/Unidata/netcdf-c/archive/v4.10.0.tar.gz
+        sha256: ce160f9c1483b32d1ba8b7633d7984510259e4e439c48a218b95a023dc02fd4c
+        x-checker-data:
+          type: anitya
+          project-id: 10354
+          stable-only: true
+          url-template: https://github.com/Unidata/netcdf-c/archive/v$version.tar.gz
+
   - name: coot
     buildsystem: autotools
     config-opts:
@@ -614,6 +633,7 @@ modules:
       - --with-backward
       - --with-coordgen
       - --with-libdw
+      - --with-netcdf
       - --with-guile
       - --with-sound
       - --with-sqlite3
@@ -636,4 +656,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/pemsley/coot.git
-        commit: 4f8dedd2f44650b4224b841d38526871e829232c
+        tag: Release-1.2
+        commit: 1a5900449e69ea1ef4607882d2f7e15912f7b6ec
+        x-checker-data:
+          type: git
+          tag-pattern: ^Release-([0-9]+(?:\.[0-9]+)*)$
