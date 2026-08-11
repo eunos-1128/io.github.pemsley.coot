@@ -570,8 +570,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/rdkit/rdkit
-        tag: Release_2026_03_5
-        commit: de8add1e32ff6d3c4e4e406f64b703b662dff1d6
+        tag: Release_2026_03_2
+        commit: 42fe8c952589bb750e27ea7f259a50b36576bfa5
         x-checker-data:
           type: git
           tag-pattern: ^Release_([0-9]+_[0-9]+_[0-9]+)$
